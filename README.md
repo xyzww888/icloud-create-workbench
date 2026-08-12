@@ -100,3 +100,5 @@ npm run init-env
 ## HTTPS 升级
 
 接入 Nginx、Caddy 或负载均衡后，将 `APP_ORIGIN` 改为实际 HTTPS 地址，并设置 `COOKIE_SECURE=true`，然后重启容器。
+## 友链
+- **LinuxDo** — <https://linux.do>
