@@ -6,6 +6,8 @@ export async function api(path, options = {}) {
     ...options
   });
   if (response.status === 401) {
+    const data = await response.json().catch(() => ({}));
+    if (path.includes("/api/auth/login")) throw new Error(data.error || "用户名或密码错误");
     if (!location.pathname.endsWith("login.html")) location.href = "/login.html";
     throw new Error("登录已过期");
   }

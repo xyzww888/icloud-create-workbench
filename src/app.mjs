@@ -56,7 +56,13 @@ export function createApp({ config, repositories, icloudService, inboxService, c
     res.setHeader("Pragma", "no-cache");
     res.sendFile(join(frontendDir, "index.html"));
   };
-  app.get(["/login", "/login/", "/login.html", "/login-out"], sendFrontend);
+  const sendLogin = (req, res) => {
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0, no-transform");
+    res.setHeader("Pragma", "no-cache");
+    const loginFile = join(frontendDir, "login.html");
+    res.sendFile(existsSync(loginFile) ? loginFile : join(frontendDir, "index.html"));
+  };
+  app.get(["/login", "/login/", "/login.html", "/login-out"], sendLogin);
   app.get("/mail/:email/:token", (req, res) => {
     res.setHeader("Cache-Control", "no-store, max-age=0");
     res.setHeader("Referrer-Policy", "no-referrer");
@@ -78,7 +84,7 @@ export function createApp({ config, repositories, icloudService, inboxService, c
     if (res.headersSent) return next(error);
     const status = Number(error.status || 500);
     if (status >= 500) console.error(`${new Date().toISOString()} ${req.method} ${req.path}: ${error.message}`);
-    const body = { error: status >= 500 ? "服务器处理请求失败" : error.message };
+    const body = { error: status >= 500 && !String(error.message || "").startsWith("DATA_ENCRYPTION_KEY") ? "服务器处理请求失败" : error.message };
     if (error.cooldownUntil) body.cooldownUntil = error.cooldownUntil;
     res.status(status).json(body);
   });
