@@ -141,6 +141,7 @@ export function createInboxService({ config, repositories }) {
       auth: { user: stored.email, pass: decryptSecret(stored.password_encrypted, config.encryptionKey) },
       logger: false
     });
+    client.on("error", () => {});
     let added = 0;
     let scanned = 0;
     let lastUid = Number(stored.last_uid || 0);

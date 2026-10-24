@@ -12,3 +12,12 @@ exports/
 *.db-wal
 vendor/hidemyemail-generator/.git/
 mcds/
+
+# 本地数据与临时文件
+/*.txt
+/*.png
+*.local
+*.local.*
+*.log
+*.tmp
+*.temp

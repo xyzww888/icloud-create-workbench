@@ -71,6 +71,7 @@ class HideMyEmail:
             },
             timeout=aiohttp.ClientTimeout(total=REQUEST_TIMEOUT_SECONDS),
             connector=connector,
+            trust_env=True,
         )
 
         return self

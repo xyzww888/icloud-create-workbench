@@ -125,6 +125,7 @@ export function createIcloudService({ config, repositories, callBridge }) {
     const { job, labels } = repositories.createJobWithLabels(accountId, prefix, count);
     repositories.startJob(job.id);
     let result;
+    let expiredError = null;
     try {
       result = await callBridge(config, "generate", {
         cookie,
@@ -133,12 +134,13 @@ export function createIcloudService({ config, repositories, callBridge }) {
         labels
       }, Math.max(90_000, count * 45_000));
     } catch (error) {
-      if (isExpiredSessionError(error.message)) throw toExpiredAccountError(accountId, error);
+      if (isExpiredSessionError(error.message)) expiredError = error;
       result = { generated: [], errors: [{ label: labels[0], error: error.message }] };
     }
     repositories.upsertAddresses(accountId, job.id, result.generated, "generated");
     repositories.updateMaildomainHost(accountId, result.maildomainHost);
     const finished = repositories.finishJob(job.id, accountId, result, config.cooldownMinutes);
+    if (expiredError) throw toExpiredAccountError(accountId, expiredError);
     return { jobId: job.id, ...finished, generated: result.generated, errors: result.errors };
   }
 

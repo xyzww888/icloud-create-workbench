@@ -147,6 +147,13 @@ export function createRepositories(db) {
     const firstSuccessAt = successCount ? result.generated[0].createdAt || finishedAt : null;
     const errorSummary = result.errors.map(item => item.error).join("；").slice(0, 1000);
     const transaction = db.transaction(() => {
+      const job = db.prepare("SELECT requested_count FROM generation_jobs WHERE id = ?").get(id);
+      const requestedCount = Number(job?.requested_count || 0);
+      const failedCount = Math.max(0, requestedCount - successCount);
+      if (failedCount > 0) {
+        db.prepare("UPDATE icloud_accounts SET label_sequence = MAX(0, label_sequence - ?), updated_at = ? WHERE id = ?")
+          .run(failedCount, finishedAt, accountId);
+      }
       db.prepare(`UPDATE generation_jobs SET status = ?, error_summary = ?, finished_at = ?, first_success_at = ? WHERE id = ?`)
         .run(status, errorSummary, finishedAt, firstSuccessAt, id);
       if (firstSuccessAt) {

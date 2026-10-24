@@ -152,6 +152,7 @@ async def fetch_account_info_from_cookie(
         headers=headers,
         timeout=aiohttp.ClientTimeout(total=30),
         connector=connector,
+        trust_env=True,
     ) as session:
         async with session.get(SETUP_VALIDATE_URLS[region]) as response:
             try:
