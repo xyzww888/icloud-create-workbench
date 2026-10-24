@@ -1,4 +1,8 @@
+<img src="frontend/apps/admin/public/assets/icloud-logo.png" width="64" alt="船长AI" />
+
 # iCloud 隐藏邮箱生产控制台
+
+左上角、登录页与浏览器标签图标已统一为船长 AI 标识（深蓝底白锚 + 青色电路）。
 
 这是一个单管理员、多 CK 的服务器控制台。Node.js 负责 Web、JWT、SQLite 和调度，Python 调用固定版本的 `hidemyemail-generator` 完成 iCloud 操作。
 
